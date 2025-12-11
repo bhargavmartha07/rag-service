@@ -1,0 +1,12 @@
+# Virtual environment
+.venv/
+
+# Uploaded files — should NOT be committed
+data/uploads/
+
+# Chroma vector database files
+data/db/
+
+# Python cache
+__pycache__/
+*.pyc

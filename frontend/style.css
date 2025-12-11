@@ -1,0 +1,124 @@
+/* ---------- GENERAL PAGE STYLE ---------- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f2f4f8;
+}
+
+h1 {
+    text-align: center;
+    color: #222;
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+/* ---------- SECTION BOXES ---------- */
+section {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+/* ---------- INPUTS & BUTTONS ---------- */
+input[type="text"],
+input[type="file"] {
+    width: 75%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* ---------- CHAT BOX ---------- */
+.chat-box {
+    height: 330px;
+    overflow-y: auto;
+    border: 1px solid #cad1dc;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #eef2ff;
+    margin-bottom: 10px;
+}
+
+/* USER & ASSISTANT MESSAGES */
+.user-msg {
+    background-color: #d1e7dd;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 10px;
+    text-align: right;
+    max-width: 85%;
+    margin-left: auto;
+    font-size: 15px;
+}
+
+.assistant-msg {
+    background-color: #fde2e4;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 10px;
+    text-align: left;
+    max-width: 85%;
+    margin-right: auto;
+    font-size: 15px;
+}
+
+/* ---------- SOURCES BLOCK ---------- */
+.sources {
+    font-size: 13px;
+    color: #444;
+    margin: 5px 0;
+    padding: 8px;
+    border-left: 3px solid #007bff;
+    background-color: #eef6ff;
+    border-radius: 4px;
+}
+
+/* ---------- STATUS BOX ---------- */
+#uploadStatus,
+#report {
+    margin-top: 12px;
+    padding: 12px;
+    background-color: #eef2ff;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    border: 1px solid #ccd4e0;
+}
+
+/* ---------- INPUT AREA (CHAT) ---------- */
+.input-area {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* ---------- MOBILE FIXES ---------- */
+@media (max-width: 600px) {
+    input[type="text"], input[type="file"] {
+        width: 100%;
+    }
+    .input-area {
+        flex-direction: column;
+    }
+    button {
+        width: 100%;
+    }
+}
