@@ -1,31 +1,14 @@
-# -----------------------
-# Python Virtual Environment
-# -----------------------
+# Virtual environment
 .venv/
 
-# -----------------------
-# Environment Variables
-# -----------------------
-.env
-
-# -----------------------
-# Uploaded Documents (should not be committed)
-# -----------------------
-data/uploads/
-
-# -----------------------
-# ChromaDB Vector Store (auto-generated)
-# -----------------------
-data/db/
-
-# -----------------------
-# Python Cache Files
-# -----------------------
+# Python cache
 __pycache__/
 *.pyc
-*.pyo
 
-# -----------------------
-# VSCode Settings (optional)
-# -----------------------
-.vscode/
+# Do NOT track data folders
+data/uploads/
+data/db/
+data/faiss/
+
+# Environment variables
+.env
