@@ -1,53 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RAG Chat Interface</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RAG Document Chat</title>
+<link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <h1>📄 RAG Document Chat</h1>
 
-    <h1>📄 RAG Document Chat</h1>
+  <section class="upload-section">
+      <h2>Upload Documents</h2>
+      <input type="file" id="fileInput" multiple accept=".pdf,.txt,.docx" />
+      <button id="uploadBtn" onclick="uploadFiles()">Upload</button>
+      <pre id="uploadStatus" class="status-box"></pre>
+  </section>
 
-    <!-- Upload Section -->
-    <section class="upload-section">
-        <h2>Upload Documents</h2>
+  <section class="chat-section">
+      <h2>Chat with Your Documents</h2>
+      <div id="chatBox" class="chat-box"></div>
 
-        <input type="file" id="fileInput" multiple accept=".pdf,.txt,.docx">
-        <!-- Added id uploadBtn -->
-        <button id="uploadBtn" onclick="uploadFiles()">Upload</button>
+      <div class="input-area">
+          <input type="text" id="questionInput" placeholder="Ask something about your documents..." onkeydown="if(event.key==='Enter') askQuestion()" />
+          <button id="askBtn" onclick="askQuestion()">Ask</button>
+          <button onclick="clearChat()">Clear</button>
+      </div>
+  </section>
 
-        <pre id="uploadStatus" class="status-box"></pre>
-    </section>
-
-    <!-- Chat Section -->
-    <section class="chat-section">
-        <h2>Chat with Your Documents</h2>
-
-        <div id="chatBox" class="chat-box"></div>
-
-        <div class="input-area">
-            <input
-                type="text"
-                id="questionInput"
-                placeholder="Ask something about your documents..."
-                onkeydown="if(event.key==='Enter') askQuestion()"
-            >
-            <!-- Added id askBtn and id clearBtn -->
-            <button id="askBtn" onclick="askQuestion()">Ask</button>
-            <button id="clearBtn" onclick="clearChat()">Clear</button>
-        </div>
-    </section>
-
-    <!-- Report Section -->
-    <section class="report-section">
-        <h2>System Report</h2>
-        <button id="reportBtn" onclick="getReport()">Get Report</button>
-
-        <pre id="report" class="status-box"></pre>
-    </section>
+  <section class="report-section">
+      <h2>System Report</h2>
+      <button onclick="getReport()">Get Report</button>
+      <pre id="report" class="status-box"></pre>
+  </section>
 
 <script src="app.js"></script>
 </body>

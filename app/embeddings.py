@@ -1,15 +1,20 @@
-# app/embeddings.py
+import os
 from sentence_transformers import SentenceTransformer
 
-# load once
-_model = SentenceTransformer("all-MiniLM-L6-v2")
+_MODEL_NAME = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+
+try:
+    model = SentenceTransformer(_MODEL_NAME)
+except Exception as e:
+    raise RuntimeError(f"Failed to load embedding model {_MODEL_NAME}: {e}")
+
 
 def embed_text(text_list):
     """
-    Accepts list[str] and returns list[list[float]] compatible with Chroma.
+    Accepts list[str] -> returns list[list[float]] suitable for storing.
     """
-    if not text_list:
-        return []
-    embeddings = _model.encode(text_list, show_progress_bar=False)
-    # convert to nested lists (python lists)
-    return embeddings.tolist() if hasattr(embeddings, "tolist") else [list(e) for e in embeddings]
+    if not isinstance(text_list, list):
+        text_list = [text_list]
+    embs = model.encode(text_list, show_progress_bar=False)
+    # convert to python lists
+    return embs.tolist()

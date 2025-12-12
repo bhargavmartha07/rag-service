@@ -4,55 +4,67 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# prefer new OpenAI SDK if installed; fallback to openai package
+# support both new OpenAI SDK and legacy `openai` package
 try:
     from openai import OpenAI
-    _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    _use_new = True
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    if not OPENAI_API_KEY:
+        raise ValueError("OPENAI_API_KEY not set")
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    _use_new_client = True
 except Exception:
     import openai
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    _use_new = False
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    if not OPENAI_API_KEY:
+        raise ValueError("OPENAI_API_KEY not set")
+    openai.api_key = OPENAI_API_KEY
+    _use_new_client = False
+
+DEFAULT_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
+
 
 def generate_answer(context_chunks, question):
     """
-    Build a prompt and call the LLM. Returns text answer.
+    Better prompt:
+    - If context contains partial info, model must answer using it.
+    - Only say "The document does not contain this information."
+      when NOTHING relevant exists.
     """
-    if not context_chunks:
-        return "No context available to answer the question."
 
-    context_text = "\n\n".join(context_chunks)
-    prompt = f"""You are a helpful assistant. Use the context below to answer the user's question.
-If the answer is not present in the context, say "The document does not contain this information."
+    context_text = "\n\n---\n\n".join(context_chunks)
+
+    prompt = f"""
+You are a helpful assistant.
+
+You must answer the question USING THE CONTEXT BELOW.
+Even if the context does not contain a direct definition, you must infer from related sentences.
+
+ONLY IF the context contains absolutely no relevant information,
+reply exactly with:
+"The document does not contain this information."
 
 Context:
 {context_text}
 
-Question: {question}
-Answer:"""
+Question:
+{question}
 
-    # Check API key
-    if not os.getenv("OPENAI_API_KEY"):
-        return "OpenAI API key not configured on server."
+Provide the most accurate answer using the available context.
+"""
 
-    try:
-        if _use_new:
-            # New OpenAI client style
-            response = _client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=400
-            )
-            # Some clients return choices differently
-            return response.choices[0].message.content
-        else:
-            # Legacy openai package
-            resp = openai.ChatCompletion.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=400
-            )
-            return resp["choices"][0]["message"]["content"]
-    except Exception as e:
-        print("LLM call failed:", e)
-        return "LLM call failed: " + str(e)
+    if _use_new_client:
+        response = client.chat.completions.create(
+            model=DEFAULT_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=400,
+            temperature=0
+        )
+        return response.choices[0].message.content.strip()
+    else:
+        response = openai.ChatCompletion.create(
+            model=DEFAULT_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=400,
+            temperature=0
+        )
+        return response.choices[0].message.content.strip()

@@ -1,8 +1,8 @@
-# app/document_processor.py
 import re
 import PyPDF2
 import docx
-import os
+from typing import List
+
 
 def extract_text(file_path: str) -> str:
     file_path = str(file_path)
@@ -18,7 +18,6 @@ def extract_text(file_path: str) -> str:
                 if t:
                     text += t + "\n"
         except Exception as e:
-            # fallback: return empty string on failure
             print("PDF read error:", e)
         return text
     elif file_path.lower().endswith(".docx"):
@@ -32,19 +31,49 @@ def extract_text(file_path: str) -> str:
         raise ValueError("Unsupported file type")
 
 
-def chunk_text(text: str, chunk_size: int = 1000, overlap: int = 200):
+def chunk_text(text: str, chunk_size: int = 1000, overlap: int = 200) -> List[str]:
     if not text:
         return []
-    # Normalize whitespace
-    text = re.sub(r"\s+", " ", text).strip()
+
+    # Normalize but preserve paragraph breaks
+    text = re.sub(r'\r\n', '\n', text)
+    text = re.sub(r'\n\s*\n+', '\n\n', text).strip()
+
+    paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
     chunks = []
-    start = 0
-    text_len = len(text)
-    while start < text_len:
-        end = start + chunk_size
-        chunk = text[start:end]
-        chunks.append(chunk.strip())
-        if end >= text_len:
-            break
-        start = end - overlap
+    current = ""
+
+    for para in paragraphs:
+        if len(current) + len(para) + 1 <= chunk_size:
+            current = (current + " " + para).strip()
+        else:
+            if current:
+                chunks.append(current.strip())
+            if len(para) > chunk_size:
+                start = 0
+                while start < len(para):
+                    end = start + chunk_size
+                    chunks.append(para[start:end].strip())
+                    if end >= len(para):
+                        break
+                    start = end - overlap
+                current = ""
+            else:
+                current = para
+
+    if current:
+        chunks.append(current.strip())
+
+    # create small overlap between adjacent chunks
+    if overlap > 0 and len(chunks) > 1:
+        merged = []
+        for i, c in enumerate(chunks):
+            if i == 0:
+                merged.append(c)
+            else:
+                prev = merged[-1]
+                tail = prev[-overlap:] if len(prev) > overlap else prev
+                merged.append((tail + " " + c).strip())
+        chunks = merged
+
     return chunks

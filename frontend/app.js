@@ -3,12 +3,9 @@ const API_BASE = "http://127.0.0.1:8000";
 async function uploadFiles() {
     const files = document.getElementById("fileInput").files;
     if (!files.length) return alert("Select files to upload.");
-
     const uploadBtn = document.getElementById("uploadBtn");
-    if (uploadBtn) uploadBtn.disabled = true;
-    const statusEl = document.getElementById("uploadStatus");
-    if (statusEl) statusEl.innerText = "Uploading...";
-
+    uploadBtn.disabled = true;
+    document.getElementById("uploadStatus").innerText = "Uploading...";
     const formData = new FormData();
     for (let file of files) formData.append("files", file);
 
@@ -16,16 +13,16 @@ async function uploadFiles() {
         const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: formData });
         if (!res.ok) {
             const text = await res.text();
-            if (statusEl) statusEl.innerText = `Upload failed: ${res.status} ${text}`;
+            document.getElementById("uploadStatus").innerText = `Upload failed: ${res.status} ${text}`;
             return;
         }
         const data = await res.json();
-        if (statusEl) statusEl.innerText = JSON.stringify(data, null, 2);
+        document.getElementById("uploadStatus").innerText = JSON.stringify(data, null, 2);
     } catch (err) {
-        if (statusEl) statusEl.innerText = "Upload failed (network error).";
-        console.error("Upload error:", err);
+        document.getElementById("uploadStatus").innerText = "Upload failed.";
+        console.error("upload error", err);
     } finally {
-        if (uploadBtn) uploadBtn.disabled = false;
+        uploadBtn.disabled = false;
     }
 }
 
@@ -35,8 +32,7 @@ async function askQuestion() {
     const chatBox = document.getElementById("chatBox");
     const question = questionInput.value.trim();
     if (!question) return;
-
-    if (askBtn) askBtn.disabled = true;
+    askBtn.disabled = true;
     chatBox.innerHTML += `<div class="user-msg"><b>You:</b> ${escapeHtml(question)}</div>`;
     questionInput.value = "";
     const loadingId = `loading-${Date.now()}`;
@@ -57,49 +53,35 @@ async function askQuestion() {
         const data = await res.json();
         document.getElementById(loadingId).outerHTML = `<div class="assistant-msg"><b>Assistant:</b> ${escapeHtml(data.answer)}</div>`;
         if (data.sources && data.sources.length) {
-            const s = data.sources.map(src => `<div class="sources">${escapeHtml(src)}</div>`).join("");
+            const s = data.sources.map(s => `<div class="sources">${escapeHtml(s)}</div>`).join("");
             chatBox.innerHTML += s;
         }
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (err) {
         document.getElementById(loadingId).innerHTML = `<b>Assistant:</b> Request failed.`;
-        console.error("Query error:", err);
+        console.error("ask error", err);
     } finally {
-        if (askBtn) askBtn.disabled = false;
+        askBtn.disabled = false;
+    }
+}
+
+function clearChat() {
+    document.getElementById("chatBox").innerHTML = "";
+}
+
+async function getReport() {
+    try {
+        const res = await fetch(`${API_BASE}/report`);
+        const data = await res.json();
+        document.getElementById("report").innerText = JSON.stringify(data, null, 2);
+    } catch (e) {
+        document.getElementById("report").innerText = "Failed to fetch report.";
     }
 }
 
 function escapeHtml(text) {
-    if (typeof text !== "string") return text;
-    return text
+    return (text + "")
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;");
-}
-
-function clearChat() {
-    const chatBox = document.getElementById("chatBox");
-    if (chatBox) chatBox.innerHTML = "";
-}
-
-async function getReport() {
-    const reportBtn = document.getElementById("reportBtn");
-    if (reportBtn) reportBtn.disabled = true;
-    const reportEl = document.getElementById("report");
-    if (reportEl) reportEl.innerText = "Fetching report...";
-    try {
-        const res = await fetch(`${API_BASE}/report`);
-        if (!res.ok) {
-            const text = await res.text();
-            if (reportEl) reportEl.innerText = `Failed: ${res.status} ${text}`;
-            return;
-        }
-        const data = await res.json();
-        if (reportEl) reportEl.innerText = JSON.stringify(data, null, 2);
-    } catch (err) {
-        if (reportEl) reportEl.innerText = "Failed to fetch report.";
-        console.error("Report error:", err);
-    } finally {
-        if (reportBtn) reportBtn.disabled = false;
-    }
 }
