@@ -1,0 +1,1 @@
+This is a short sample document for testing the RAG service. It contains a couple of lines about Web3, DApps, and blockchain.
