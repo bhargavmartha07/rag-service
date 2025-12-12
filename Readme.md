@@ -148,6 +148,28 @@ LLM | OpenAI GPT-4o Mini
 Frontend | HTML, CSS, JavaScript  
 Language | Python 3.13  
 
+Supported file types:
+- .pdf
+- .txt
+- .docx
+
+Note: .md files are not processed by the service by default.
+
+Included sample document for testing:
+- sample-docs/sample.txt
+
+
+### Screenshots
+Screenshots: add `screenshots/upload.png`, `screenshots/query.png`, `screenshots/report.png` into the repo and reference them here.
+Upload:  
+![upload](screenshots/upload.png)
+
+Query response:  
+![query](screenshots/query.png)
+
+Report:  
+![report](screenshots/report.png)
+
 
 ## Author
 

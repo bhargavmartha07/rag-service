@@ -34,23 +34,18 @@ def generate_answer(context_chunks, question):
     context_text = "\n\n---\n\n".join(context_chunks)
 
     prompt = f"""
-You are a helpful assistant.
-
-You must answer the question USING THE CONTEXT BELOW.
-Even if the context does not contain a direct definition, you must infer from related sentences.
-
-ONLY IF the context contains absolutely no relevant information,
-reply exactly with:
-"The document does not contain this information."
+You are an expert assistant. Use the following context to answer the question.
+If the answer is partially present, answer using what is available.
+If you cannot find a direct answer, explain based on the best possible context match.
 
 Context:
 {context_text}
 
-Question:
-{question}
+Question: {question}
 
-Provide the most accurate answer using the available context.
+Answer:
 """
+
 
     if _use_new_client:
         response = client.chat.completions.create(
